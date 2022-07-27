@@ -53,7 +53,7 @@ seata:
   enabled: true
   application-id: geekgame-exchange-app
   tx-service-group: default_tx_group
-  enable-auto-data-source-proxy: true
+  enable-auto-data-source-proxy: false
   config:
     type: nacos
     nacos:
