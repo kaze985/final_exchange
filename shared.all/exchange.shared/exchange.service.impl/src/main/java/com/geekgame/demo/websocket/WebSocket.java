@@ -1,4 +1,4 @@
-package com.geekgame.demo.util;
+package com.geekgame.demo.websocket;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -7,9 +7,9 @@ import com.geekgame.demo.model.ExchangeRecord;
 import com.geekgame.demo.model.ExchangeStatus;
 import com.geekgame.demo.model.Message;
 import com.geekgame.demo.service.ExchangeService;
+import com.geekgame.demo.service.impl.ExchangeServiceImpl;
+import com.geekgame.demo.util.ApplicationContextProvider;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -34,15 +34,13 @@ public class WebSocket {
     // 用来存在线连接数
     private static Map<String,Session> sessionPool = new HashMap<String,Session>();
 
-    @Qualifier("redisTemplate")
-    @Autowired
-    private RedisTemplate template;
+    private RedisTemplate template = (RedisTemplate) ApplicationContextProvider.getBean("redisTemplateInit");
 
-    @Autowired
-    private ObjectMapper mapper;
 
-    @Autowired
-    private ExchangeService exchangeService;
+    private ObjectMapper mapper = ApplicationContextProvider.getBean(ObjectMapper.class);
+
+
+    private ExchangeService exchangeService = ApplicationContextProvider.getBean(ExchangeServiceImpl.class);
 
     /**
      * 链接成功调用的方法
@@ -91,6 +89,9 @@ public class WebSocket {
     @OnMessage
     public void onMessage(String message) throws JsonProcessingException {
         log.info("【websocket消息】收到客户端消息:"+message);
+        if (message.equals("1")) {
+            return;
+        }
         Message value = mapper.readValue(message, Message.class);
         if (value.getType().equals("notice")) {
             ExchangeRecord record = exchangeService.add(value.getContent());
@@ -115,7 +116,7 @@ public class WebSocket {
      */
     @OnError
     public void onError(Session session, Throwable error) {
-        log.error("用户错误,原因:"+error.getMessage());
+        log.error("发生错误,原因:"+error.getMessage());
         error.printStackTrace();
     }
 
