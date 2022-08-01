@@ -7,6 +7,4 @@ import org.apache.ibatis.annotations.Mapper;
 public interface ExchangeRecordDAO {
     int add(ExchangeRecordDO recordDO);
     int update(ExchangeRecordDO recordDO);
-
-    ExchangeRecordDO findById(String id);
 }

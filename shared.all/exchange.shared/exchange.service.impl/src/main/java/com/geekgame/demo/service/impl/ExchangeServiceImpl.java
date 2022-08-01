@@ -30,6 +30,14 @@ public class ExchangeServiceImpl implements ExchangeService {
         record.setStatus(ExchangeStatus.EXCHANGING);
         record.setGmtCreated(LocalDateTime.now());
         record.setGmtModified(LocalDateTime.now());
+
+        Item activePartyItem = itemService.findById(record.getActivePartyItem());
+        Item passivePartyItem = itemService.findById(record.getPassivePartyItem());
+        record.setActivePartyName(activePartyItem.getOwnerName());
+        record.setActivePartyItemName(activePartyItem.getName());
+        record.setPassivePartyName(passivePartyItem.getOwnerName());
+        record.setPassivePartyItemName(passivePartyItem.getName());
+
         int add = recordDAO.add(new ExchangeRecordDO(record));
         if (add == 0){
             return null;

@@ -14,11 +14,19 @@ public class ExchangeRecordDO implements Serializable {
 
     private String activeParty;
 
+    private String activePartyName;
+
     private String passiveParty;
+
+    private String passivePartyName;
 
     private String activePartyItem;
 
+    private String activePartyItemName;
+
     private String passivePartyItem;
+
+    private String passivePartyItemName;
 
     private String status;
 
