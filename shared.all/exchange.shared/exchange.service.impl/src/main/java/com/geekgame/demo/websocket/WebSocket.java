@@ -16,24 +16,24 @@ import org.springframework.stereotype.Component;
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 @Slf4j
-@ServerEndpoint("/websocket/{userId}")  // 接口路径 ws://localhost:8084/webSocket/userId;
+@ServerEndpoint("/websocket/{userId}")  // 接口路径 ws://localhost:8084/websocket/userId;
 public class WebSocket {
 
     //与某个客户端的连接会话，需要通过它来给客户端发送数据
     private Session session;
+    private String userId;
 
-    //concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。
-    private static CopyOnWriteArraySet<WebSocket> webSockets =new CopyOnWriteArraySet<>();
+    //concurrent包的线程安全Set，用来存放每个客户端对应的WebSocket对象。
+    private static ConcurrentHashMap<String,WebSocket> webSockets = new ConcurrentHashMap<>();
 
     // 用来存在线连接数
-    private static Map<String,Session> sessionPool = new HashMap<String,Session>();
+    private static AtomicInteger onlineCount = new AtomicInteger(0);
 
     //因为@ServerEndpoint不支持注入，所以使用SpringUtils获取IOC实例
     private RedisTemplate template = (RedisTemplate) ApplicationContextProvider.getBean("redisTemplateInit");
@@ -48,10 +48,11 @@ public class WebSocket {
     @OnOpen
     public void onOpen(Session session, @PathParam(value="userId") String userId) {
         try {
+            this.userId = userId;
             this.session = session;
-            webSockets.add(this);
-            sessionPool.put(userId, session);
-            log.info("【websocket消息】有新的连接，总数为:"+webSockets.size());
+            webSockets.put(userId,this);
+            onlineCount.incrementAndGet();
+            log.info("【websocket消息】有新的连接，当前连接总数为:"+onlineCount.get());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -64,8 +65,9 @@ public class WebSocket {
     @OnClose
     public void onClose() {
         try {
-            webSockets.remove(this);
-            log.info("【websocket消息】连接断开，总数为:"+webSockets.size());
+            webSockets.remove(this.userId);
+            onlineCount.decrementAndGet();
+            log.info("【websocket消息】连接断开，当前连接总数为:"+onlineCount.get());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -95,8 +97,8 @@ public class WebSocket {
 
     // 发送单点消息
     public void sendOneMessage(Message message) {
-        Session session = sessionPool.get(message.getReceiver());
-        if (session != null&&session.isOpen()) {
+        WebSocket webSocket = webSockets.get(message.getReceiver());
+        if (webSocket != null && webSocket.session.isOpen()) {
             try {
                 log.info("【websocket消息】 单点消息:"+message);
                 session.getAsyncRemote().sendText(mapper.writeValueAsString(message));
