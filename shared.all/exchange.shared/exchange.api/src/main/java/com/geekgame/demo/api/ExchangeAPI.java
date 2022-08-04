@@ -37,9 +37,8 @@ public class ExchangeAPI {
     @PostMapping("/exchange")
     public Result<ExchangeRecord> exchange(@RequestBody ExchangeRecord record){
         Result<ExchangeRecord> result = new Result<>();
-        ExchangeRecord exchange = exchangeService.exchange(record);
+        boolean exchange = exchangeService.exchange(record);
         result.setSuccess(true);
-        result.setData(exchange);
         return result;
     }
     

@@ -31,13 +31,6 @@ public class ExchangeServiceImpl implements ExchangeService {
         record.setGmtCreated(LocalDateTime.now());
         record.setGmtModified(LocalDateTime.now());
 
-        Item activePartyItem = itemService.findById(record.getActivePartyItem());
-        Item passivePartyItem = itemService.findById(record.getPassivePartyItem());
-        record.setActivePartyName(activePartyItem.getOwnerName());
-        record.setActivePartyItemName(activePartyItem.getName());
-        record.setPassivePartyName(passivePartyItem.getOwnerName());
-        record.setPassivePartyItemName(passivePartyItem.getName());
-
         int add = recordDAO.add(new ExchangeRecordDO(record));
         if (add == 0){
             return null;
@@ -58,9 +51,19 @@ public class ExchangeServiceImpl implements ExchangeService {
 
     @Override
     @GlobalTransactional(rollbackFor = Exception.class, timeoutMills = 300000)
-    public ExchangeRecord exchange(ExchangeRecord record) {
-        Item activeParty = itemService.findById(record.getActivePartyItem());
-        Item passiveParty = itemService.findById(record.getPassivePartyItem());
+    public boolean exchange(ExchangeRecord record) {
+        Item activePartyAtNow = itemService.findById(record.getActivePartyItem().getId());
+        Item passivePartyAtNow = itemService.findById(record.getPassivePartyItem().getId());
+        Item activeParty = record.getActivePartyItem();
+        Item passiveParty = record.getPassivePartyItem();
+
+        if (!activePartyAtNow.getOwnerId().equals(activeParty.getOwnerId())) {
+            return false;
+        }
+        if (!passivePartyAtNow.getOwnerId().equals(passiveParty.getOwnerId())) {
+            return false;
+        }
+
         String tempId = activeParty.getOwnerId();
         String tempName = activeParty.getOwnerName();
         activeParty.setOwnerId(passiveParty.getOwnerId());
@@ -69,6 +72,6 @@ public class ExchangeServiceImpl implements ExchangeService {
         passiveParty.setOwnerName(tempName);
         itemService.update(activeParty);
         itemService.update(passiveParty);
-        return record;
+        return true;
     }
 }

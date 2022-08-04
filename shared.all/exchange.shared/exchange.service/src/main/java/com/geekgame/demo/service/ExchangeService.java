@@ -9,6 +9,6 @@ public interface ExchangeService {
     ExchangeRecord update(ExchangeRecord record);
 
 
-    ExchangeRecord exchange(ExchangeRecord record);
+    boolean exchange(ExchangeRecord record);
 
 }

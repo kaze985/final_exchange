@@ -101,7 +101,7 @@ public class WebSocket {
         if (webSocket != null && webSocket.session.isOpen()) {
             try {
                 log.info("【websocket消息】 单点消息:"+message);
-                session.getAsyncRemote().sendText(mapper.writeValueAsString(message));
+                webSocket.session.getAsyncRemote().sendText(mapper.writeValueAsString(message));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -137,9 +137,17 @@ public class WebSocket {
             sendOneMessage(value);
         }
         if (value.getType().equals("agree")) {
-            exchangeService.exchange(value.getContent());
+            boolean exchange = exchangeService.exchange(value.getContent());
 
-            value.getContent().setStatus(ExchangeStatus.EXCHANGE_SUCCESS);
+            if (exchange) {
+                value.getContent().setStatus(ExchangeStatus.EXCHANGE_SUCCESS);
+            } else {
+                value.getContent().setStatus(ExchangeStatus.EXCHANGE_FAILED);
+                Message message1 = new Message();
+                message1.setReceiver(value.getSender());
+                message1.setType("error");
+                sendOneMessage(message1);
+            }
             exchangeService.update(value.getContent());
         }
         if (value.getType().equals("reject")) {

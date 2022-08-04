@@ -13,21 +13,9 @@ import java.time.LocalDateTime;
 public class ExchangeRecord implements Serializable {
     private String id;
 
-    private String activeParty;
+    private Item activePartyItem;
 
-    private String activePartyName;
-
-    private String passiveParty;
-
-    private String passivePartyName;
-
-    private String activePartyItem;
-
-    private String activePartyItemName;
-
-    private String passivePartyItem;
-
-    private String passivePartyItemName;
+    private Item passivePartyItem;
 
     private ExchangeStatus status;
 
