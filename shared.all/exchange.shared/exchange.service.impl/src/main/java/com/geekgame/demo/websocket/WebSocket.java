@@ -139,16 +139,16 @@ public class WebSocket {
         }
         if (value.getType().equals("agree")) {
             boolean exchange = exchangeService.exchange(value.getContent());
-
+            Message message1 = new Message();
+            message1.setReceiver(value.getSender());
             if (exchange) {
                 value.getContent().setStatus(ExchangeStatus.EXCHANGE_SUCCESS);
+                message1.setType("success");
             } else {
                 value.getContent().setStatus(ExchangeStatus.EXCHANGE_FAILED);
-                Message message1 = new Message();
-                message1.setReceiver(value.getSender());
                 message1.setType("error");
-                sendOneMessage(message1);
             }
+            sendOneMessage(message1);
             exchangeService.update(value.getContent());
 
             template.opsForHash().delete(value.getSender(),value.getContent().getId());
