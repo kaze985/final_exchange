@@ -2,6 +2,9 @@ package com.geekgame.demo.model;
 
 import java.io.Serializable;
 
+/**
+ * 交换状态
+ */
 public enum ExchangeStatus implements Serializable {
     EXCHANGE_SUCCESS("交换成功"),
     EXCHANGE_FAILED("交换失败"),

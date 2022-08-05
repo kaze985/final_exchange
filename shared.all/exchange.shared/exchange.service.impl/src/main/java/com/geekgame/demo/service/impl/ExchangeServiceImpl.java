@@ -24,6 +24,11 @@ public class ExchangeServiceImpl implements ExchangeService {
     @DubboReference(timeout = 300000, retries = 0)
     private ItemService itemService;
 
+    /**
+     * 新增交换记录
+     * @param record
+     * @return
+     */
     @Override
     public ExchangeRecord add(ExchangeRecord record) {
         record.setId(String.valueOf(generator.nextId()));
@@ -38,6 +43,11 @@ public class ExchangeServiceImpl implements ExchangeService {
         return record;
     }
 
+    /**
+     * 更新交换记录
+     * @param record
+     * @return
+     */
     @Override
     public ExchangeRecord update(ExchangeRecord record) {
         int update = recordDAO.update(new ExchangeRecordDO(record));
@@ -48,7 +58,11 @@ public class ExchangeServiceImpl implements ExchangeService {
     }
 
 
-
+    /**
+     * 交换
+     * @param record
+     * @return
+     */
     @Override
     @GlobalTransactional(rollbackFor = Exception.class, timeoutMills = 300000)
     public boolean exchange(ExchangeRecord record) {
@@ -57,6 +71,7 @@ public class ExchangeServiceImpl implements ExchangeService {
         Item activeParty = record.getActivePartyItem();
         Item passiveParty = record.getPassivePartyItem();
 
+        //确保两个交换的物品的拥有者都没有改变
         if (!activePartyAtNow.getOwnerId().equals(activeParty.getOwnerId())) {
             return false;
         }
@@ -64,6 +79,7 @@ public class ExchangeServiceImpl implements ExchangeService {
             return false;
         }
 
+        //开始交换
         String tempId = activeParty.getOwnerId();
         String tempName = activeParty.getOwnerName();
         activeParty.setOwnerId(passiveParty.getOwnerId());

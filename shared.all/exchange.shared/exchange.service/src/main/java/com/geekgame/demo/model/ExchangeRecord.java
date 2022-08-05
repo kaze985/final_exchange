@@ -9,14 +9,30 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+
+/**
+ * 交换记录
+ */
 @Data
 public class ExchangeRecord implements Serializable {
+    /**
+     * 交换记录id
+     */
     private String id;
 
+    /**
+     * 主动方物品信息
+     */
     private Item activePartyItem;
 
+    /**
+     * 被动方物品信息
+     */
     private Item passivePartyItem;
 
+    /**
+     * 交换记录的状态
+     */
     private ExchangeStatus status;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")

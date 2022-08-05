@@ -29,10 +29,10 @@ public class WebSocket {
     private Session session;
     private String userId;
 
-    //concurrent包的线程安全Set，用来存放每个客户端对应的WebSocket对象。
+    //concurrent包的线程安全Map，用来存放每个客户端对应的WebSocket对象。
     private static ConcurrentHashMap<String,WebSocket> webSockets = new ConcurrentHashMap<>();
 
-    // 用来存在线连接数
+    // 使用线程安全的原子整数来存在线连接数
     private static AtomicInteger onlineCount = new AtomicInteger(0);
 
     //因为@ServerEndpoint不支持注入，所以使用SpringUtils获取IOC实例
@@ -106,7 +106,9 @@ public class WebSocket {
                 e.printStackTrace();
             }
         } else {
-            log.info("消息接收者还未建立WebSocket连接，发送的消息将被存储到Redis的列表中");
+            log.info("消息接收者还未建立WebSocket连接");
+        }
+        if (message.getContent() != null) {
             template.opsForHash().put(message.getReceiver(),message.getContent().getId(),message);
         }
     }
