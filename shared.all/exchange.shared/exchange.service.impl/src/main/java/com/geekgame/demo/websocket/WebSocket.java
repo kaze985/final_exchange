@@ -108,6 +108,7 @@ public class WebSocket {
         } else {
             log.info("消息接收者还未建立WebSocket连接");
         }
+        //将通知消息存储在redis中
         if (message.getContent() != null) {
             template.opsForHash().put(message.getReceiver(),message.getContent().getId(),message);
         }
@@ -115,6 +116,7 @@ public class WebSocket {
 
     //拉取未读消息
     public void pullUnreadMessage(String userId){
+        //从redis中读取通知消息
         List<Message> list = template.opsForHash().values(userId);
         if (list != null && !list.isEmpty()) {
             for (Message message : list) {
