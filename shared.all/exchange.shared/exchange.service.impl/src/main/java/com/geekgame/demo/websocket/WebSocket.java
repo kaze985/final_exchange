@@ -128,35 +128,47 @@ public class WebSocket {
 
     //处理收到的消息
     public void messageHandler(String message) throws JsonProcessingException {
+        //收到此消息不做任何处理
         if (message.equals("1")) {
             return;
         }
+        //反序列化消息
         Message value = mapper.readValue(message, Message.class);
+        //若消息类型为notice则进行消息转发处理
         if (value.getType().equals("notice")) {
+            //生成初始交换记录
             ExchangeRecord record = exchangeService.add(value.getContent());
+            //将交换记录回设，作为消息内容发送
             value.setContent(record);
             sendOneMessage(value);
         }
+        //若消息类型为agree则进行物品交换处理
         if (value.getType().equals("agree")) {
+            //开始交换
             boolean exchange = exchangeService.exchange(value.getContent());
+
             Message message1 = new Message();
             message1.setReceiver(value.getSender());
             if (exchange) {
+                //交换成功后更新交换记录状态为成功，并向前端发送success消息
                 value.getContent().setStatus(ExchangeStatus.EXCHANGE_SUCCESS);
                 message1.setType("success");
             } else {
+                //交换失败则更新交换记录状态为失败，并向前端发送error消息
                 value.getContent().setStatus(ExchangeStatus.EXCHANGE_FAILED);
                 message1.setType("error");
             }
             sendOneMessage(message1);
             exchangeService.update(value.getContent());
-
+            //删除已处理的消息
             template.opsForHash().delete(value.getSender(),value.getContent().getId());
         }
+        //若消息类型为reject则更新交换记录状态为失败
         if (value.getType().equals("reject")) {
             value.getContent().setStatus(ExchangeStatus.EXCHANGE_FAILED);
             exchangeService.update(value.getContent());
 
+            //删除已处理的消息
             template.opsForHash().delete(value.getSender(),value.getContent().getId());
         }
 
