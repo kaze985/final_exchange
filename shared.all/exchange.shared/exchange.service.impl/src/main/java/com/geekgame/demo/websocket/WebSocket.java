@@ -107,18 +107,17 @@ public class WebSocket {
             }
         } else {
             log.info("消息接收者还未建立WebSocket连接，发送的消息将被存储到Redis的列表中");
-            template.opsForList().rightPush(message.getReceiver(),message);
+            template.opsForHash().put(message.getReceiver(),message.getContent().getId(),message);
         }
     }
 
     //拉取未读消息
     public void pullUnreadMessage(String userId){
-        List<Message> list = template.opsForList().range(userId, 0, -1);
+        List<Message> list = template.opsForHash().values(userId);
         if (list != null && !list.isEmpty()) {
             for (Message message : list) {
                 sendOneMessage(message);
             }
-            template.delete(userId);
             log.info("拉取未读消息成功");
         } else {
             log.info("暂无未读消息");
@@ -149,11 +148,16 @@ public class WebSocket {
                 sendOneMessage(message1);
             }
             exchangeService.update(value.getContent());
+
+            template.opsForHash().delete(value.getSender(),value.getContent().getId());
         }
         if (value.getType().equals("reject")) {
             value.getContent().setStatus(ExchangeStatus.EXCHANGE_FAILED);
             exchangeService.update(value.getContent());
+
+            template.opsForHash().delete(value.getSender(),value.getContent().getId());
         }
+
 
     }
 }
