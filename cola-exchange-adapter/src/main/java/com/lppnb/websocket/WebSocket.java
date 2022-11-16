@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 @Slf4j
-@ServerEndpoint("/websocket/{userId}")  // 接口路径 ws://localhost:8084/websocket/userId;
+@ServerEndpoint("/websocket/{userId}")  // 接口路径 ws://localhost:8082/websocket/userId;
 public class WebSocket {
 
     //与某个客户端的连接会话，需要通过它来给客户端发送数据
