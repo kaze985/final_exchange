@@ -1,0 +1,73 @@
+
+mybatis:
+  mapper-locations: classpath:mybatis/*.xml
+
+server:
+  port: 8082
+
+spring:
+  datasource:
+    password: FAST707e
+    url: jdbc:mysql://rm-bp12g7e0k6w828uc6bo.mysql.rds.aliyuncs.com/final?serverTimezone=GMT%2B8
+    username: kaze
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jackson:
+    default-property-inclusion: non_null
+    deserialization:
+      fail-on-unknown-properties: false
+
+  redis:
+    host: 182.92.185.137
+    password: 423414a.
+    port: 6379
+
+  application:
+    name: lppnb-exchange-app
+
+  main:
+    allow-circular-references: true
+
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 182.92.185.137:8848
+
+dubbo:
+  cloud:
+    subscribed-services: lppnb-item-app
+  protocol:
+    name: dubbo
+    port: -1
+  registry:
+    address: spring-cloud://localhost
+  scan:
+    base-packages: com.lppnb.gatewayimpl.rpc
+
+seata:
+  enabled: true
+  application-id: lppnb-exchange-app
+  tx-service-group: default_tx_group
+  enable-auto-data-source-proxy: false
+  config:
+    type: nacos
+    nacos:
+      namespace:
+      serverAddr: 182.92.185.137:8848
+      group: SEATA_GROUP
+      username: "nacos"
+      password: "nacos"
+      data-id: seata.properties
+  registry:
+    type: nacos
+    nacos:
+      application: seata-server
+      server-addr: 182.92.185.137:8848
+      group: SEATA_GROUP
+      namespace:
+      username: "nacos"
+      password: "nacos"
+
+
+

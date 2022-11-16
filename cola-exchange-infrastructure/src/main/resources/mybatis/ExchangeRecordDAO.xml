@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lppnb.gatewayimpl.database.ExchangeRecordDAO">
+
+    <resultMap id="recordResultMap" type="com.lppnb.gatewayimpl.database.dataobject.ExchangeRecordDO">
+        <id column="id" property="id"/>
+        <result column="active_party" property="activeParty"/>
+        <result column="active_party_name" property="activePartyName"/>
+        <result column="passive_party" property="passiveParty"/>
+        <result column="passive_party_name" property="passivePartyName"/>
+        <result column="active_party_item" property="activePartyItem"/>
+        <result column="active_party_item_name" property="activePartyItemName"/>
+        <result column="passive_party_item" property="passivePartyItem"/>
+        <result column="passive_party_item_name" property="passivePartyItemName"/>
+        <result column="status" property="status"/>
+        <result column="gmt_created" property="gmtCreated"/>
+        <result column="gmt_modified" property="gmtModified"/>
+    </resultMap>
+
+    <insert id="add" parameterType="com.lppnb.gatewayimpl.database.dataobject.ExchangeRecordDO">
+        insert into `item_exchange_record`
+        values (#{id},#{activeParty},#{activePartyName},#{passiveParty},#{passivePartyName},#{activePartyItem},#{activePartyItemName},#{passivePartyItem},#{passivePartyItemName},#{status},now(),now())
+    </insert>
+
+    <update id="update" parameterType="com.lppnb.gatewayimpl.database.dataobject.ExchangeRecordDO">
+        update `item_exchange_record`
+        <set>
+            <if test="status != null">
+                status=#{status},
+            </if>
+            gmt_modified = now()
+        </set>
+        <where>
+            <if test="id != '' and id != null">
+                id=#{id}
+            </if>
+        </where>
+    </update>
+
+</mapper>
