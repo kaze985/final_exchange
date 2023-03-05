@@ -1,11 +1,9 @@
 package com.lppnb.executor;
 
 import cn.hutool.core.util.IdUtil;
-import com.alibaba.cola.dto.Response;
 import com.alibaba.cola.dto.SingleResponse;
 import com.lppnb.convertor.ExchangeRecordConvertor;
 import com.lppnb.domain.gateway.ExchangeGateway;
-import com.lppnb.domain.model.ExchangeRecord;
 import com.lppnb.domain.model.ExchangeStatus;
 import com.lppnb.dto.ExchangeRecordAddCmd;
 import com.lppnb.dto.data.ExchangeRecordDTO;

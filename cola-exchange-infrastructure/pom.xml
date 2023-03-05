@@ -17,7 +17,14 @@
             <groupId>com.lppnb</groupId>
             <artifactId>cola-exchange-domain</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>com.lppnb</groupId>
+            <artifactId>cola-item-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.lppnb</groupId>
+            <artifactId>cola-exchange-client</artifactId>
+        </dependency>
 
         <!--dubbo-->
         <dependency>

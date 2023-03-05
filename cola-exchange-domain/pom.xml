@@ -13,16 +13,6 @@
     <name>cola-exchange-domain</name>
 
     <dependencies>
-        <dependency>
-            <groupId>com.lppnb</groupId>
-            <artifactId>cola-exchange-client</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.lppnb</groupId>
-            <artifactId>cola-item-client</artifactId>
-        </dependency>
-
-
         <!-- COLA components -->
         <dependency>
             <groupId>com.alibaba.cola</groupId>
@@ -31,6 +21,10 @@
         <dependency>
             <groupId>com.alibaba.cola</groupId>
             <artifactId>cola-component-exception</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.cola</groupId>
+            <artifactId>cola-component-dto</artifactId>
         </dependency>
         <!-- COLA components End-->
     </dependencies>
